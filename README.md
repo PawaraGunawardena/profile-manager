@@ -63,7 +63,7 @@ How to setup firebase:
 
 ## Functions provided and description of UI
 
-Can refresh, edit firebase, remove rom firebase, save to firebase, load images, Inquiry and exit
+Can do refresh, edit firebase, remove from firebase, save to firebase, load images, inquiry and exit operations
 
     Add - Refresh and clear fields to make a new entry
     
