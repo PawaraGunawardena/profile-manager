@@ -40,8 +40,11 @@ def delete_feature_by_name(name):
 
     firebase_manager.delete(id)
 
-    fileManager = FileManager.FileManager()
-    fileManager.remove_from_remote(id)
+    try:
+        fileManager = FileManager.FileManager()
+        fileManager.remove_from_remote(id)
+    except:
+        print("")
 
 def synachronize_sqlite_with_firebase():
     if (InternetConnection.is_connected_to_network()):

@@ -395,6 +395,8 @@ class Toplevel1:
                     fileManager.insert(results['name'], self.photo_path)
 
                 self.clear_records()
+                time.sleep(3)
+                self.update_treeview()
             else:
                 messagebox.showwarning("Incomplete Details",
                                        "Please fill all the fields!")
@@ -408,6 +410,7 @@ class Toplevel1:
 
     def delete_feature(self):
         DeleteWindow.vp_start_gui(self.top)
+        self.update_treeview()
 
     def inquiry_feature(self):
         Inquiry.vp_start_gui(self.top)

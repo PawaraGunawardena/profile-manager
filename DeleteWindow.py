@@ -124,8 +124,11 @@ class Toplevel1:
             if (len(self.Entry1.get()) != 0 ):
 
                 Controller.delete_feature_by_name(self.Entry1.get())
+                # self.root_parent.update_treeview()
                 root.destroy()
                 self.get_back_parent_window()
+                # self.root_parent.update_treeview()
+
             else:
                 messagebox.showwarning("Incomplete Details",
                                        "Please fill the name field!")

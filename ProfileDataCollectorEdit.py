@@ -226,7 +226,8 @@ class Toplevel1:
                 # Controller.find_object_id_by_name(old_name, data)
                 Controller.update_feature_by_name(old_name, data)
                 root.destroy()
-
+                self.get_back_parent_window()
+                # self.root_parent.update_treeview()
             else:
                 messagebox.showwarning("Incomplete Details",
                                        "Please fill all the required fields!")
