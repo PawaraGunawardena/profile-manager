@@ -2,6 +2,7 @@ import DBManager
 import FileManager
 import InternetConnection
 import DBManager
+import FileManager
 
 def find_object_id_by_name(name, firebase_manager):
 
@@ -35,6 +36,9 @@ def delete_feature_by_name(name):
 
     firebase_manager.delete(id)
 
+    fileManager = FileManager.FileManager()
+    fileManager.remove_from_remote(id)
+
 def synachronize_sqlite_with_firebase():
     firebaseDBManager = DBManager.FirebaseDBManager()
     all_data = firebaseDBManager.getAllData()
@@ -63,6 +67,8 @@ def synachronize_sqlite_with_firebase():
 
             compare_two_dictionaries(dict_firebase, dict_sqlite)
             # print("E")
+            fileManager = FileManager.FileManager()
+            fileManager.download(id)
 
     # print("------------")
     # print()
@@ -71,6 +77,9 @@ def synachronize_sqlite_with_firebase():
 
         if sqlite_data_id not in all_data.keys():
             sqlitebaseDBManager.delete(sqlite_data_id)
+
+            fileManager = FileManager.FileManager()
+            fileManager.remove_from_local(sqlite_data_id)
             # print("Deleted"+ sqlite_data_id)
 
 def verify_item_existence_in_sqlite(id):
