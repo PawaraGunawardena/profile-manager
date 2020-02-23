@@ -10,7 +10,13 @@ import threading
 import time
 from threading import Thread
 
+import arrow as arrow
+from tkcalendar import DateEntry
+
+import Controller
 import FileManager
+import Inquiry
+import InternetConnection
 
 try:
     import Tkinter as tk
@@ -29,6 +35,11 @@ import DBManager
 import ProfileDataCollectorEdit
 import DeleteWindow
 from tkinter import filedialog
+import tkinter
+from tkinter import messagebox
+
+from PIL import Image
+Image.LOAD_TRUNCATED_IMAGES = True
 
 def updateTreeView(topelevel):
     while True:
@@ -47,6 +58,7 @@ def vp_start_gui():
     #
     # t3.setDaemon(True)
     # t3.start()
+    root.resizable(0, 0)
     root.mainloop()
 
     # while True:
@@ -73,13 +85,14 @@ def create_Toplevel1(rt, *args, **kwargs):
     ProfileDataCollector_support.init(w, top, *args, **kwargs)
     return (w, top)
 
+
 def destroy_Toplevel1():
     global w
     w.destroy()
     w = None
 
 class Toplevel1:
-    def __init__(self, top=None, interval=15):
+    def __init__(self, top=None, interval=30):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
@@ -97,12 +110,13 @@ class Toplevel1:
         self.style.map('.', background=
         [('selected', _compcolor), ('active', _ana2color)])
 
+        self.top = top
         top.geometry("600x450+348+350")
         top.minsize(1, 1)
         top.maxsize(2545, 994)
         top.resizable(1, 1)
         top.title("Feature")
-        top.configure(cursor="watch")
+        top.configure(cursor="arrow")
         top.configure(highlightcolor="black")
 
         self.photo_path = None
@@ -113,7 +127,7 @@ class Toplevel1:
         self.Frame1.configure(relief='groove')
         self.Frame1.configure(borderwidth="2")
         self.Frame1.configure(relief="groove")
-        self.Frame1.configure(cursor="watch")
+        self.Frame1.configure(cursor="arrow")
 
         self.LabelTitle = tk.Label(self.Frame1)
         self.LabelTitle.place(relx=0.41, rely=0.023, height=21, width=79)
@@ -149,14 +163,14 @@ class Toplevel1:
         self.ButtonNewPhoto = tk.Button(self.Frame2, command=lambda:self.add_new_photo())
         self.ButtonNewPhoto.place(relx=0.024, rely=0.478, height=51, width=81)
         self.ButtonNewPhoto.configure(activebackground="#f9f9f9")
-        self.ButtonNewPhoto.configure(cursor="watch")
+        self.ButtonNewPhoto.configure(cursor="arrow")
         self.ButtonNewPhoto.configure(text='''New Photo''')
 
         self.LabelPhotoCount = tk.Label(self.Frame2)
         self.LabelPhotoCount.place(relx=0.576, rely=0.493, height=11, width=29)
         self.LabelPhotoCount.configure(text='''0''')
 
-        self.ButtonInquiry = tk.Button(self.Frame2)
+        self.ButtonInquiry = tk.Button(self.Frame2, command=lambda:self.inquiry_feature())
         self.ButtonInquiry.place(relx=0.082, rely=0.746, height=21, width=71)
         self.ButtonInquiry.configure(activebackground="#f9f9f9")
         self.ButtonInquiry.configure(text='''Inquiry''')
@@ -196,27 +210,31 @@ class Toplevel1:
         self.EntryName = tk.Entry(self.Frame1)
         self.EntryName.place(relx=0.12, rely=0.138,height=23, relwidth=0.284)
         self.EntryName.configure(background="white")
-        self.EntryName.configure(cursor="watch")
+        self.EntryName.configure(cursor="arrow")
         self.EntryName.configure(font="TkFixedFont")
 
         self.EntryPhone = tk.Entry(self.Frame1)
         self.EntryPhone.place(relx=0.53, rely=0.138,height=23, relwidth=0.284)
         self.EntryPhone.configure(background="white")
-        self.EntryPhone.configure(cursor="watch")
+        self.EntryPhone.configure(cursor="arrow")
         self.EntryPhone.configure(font="TkFixedFont")
         self.EntryPhone.configure(selectbackground="#c4c4c4")
 
         self.EntryNote = tk.Entry(self.Frame1)
         self.EntryNote.place(relx=0.121, rely=0.228,height=23, relwidth=0.694)
         self.EntryNote.configure(background="white")
-        self.EntryNote.configure(cursor="watch")
+        self.EntryNote.configure(cursor="arrow")
         self.EntryNote.configure(font="TkFixedFont")
 
-        self.EntryDate = tk.Entry(self.Frame1)
-        self.EntryDate.place(relx=0.532, rely=0.315,height=23, relwidth=0.284)
-        self.EntryDate.configure(background="white")
-        self.EntryDate.configure(cursor="watch")
-        self.EntryDate.configure(font="TkFixedFont")
+        # self.EntryDate = tk.Entry(self.Frame1)
+        # self.EntryDate.place(relx=0.532, rely=0.315,height=23, relwidth=0.284)
+        # self.EntryDate.configure(background="white")
+        # self.EntryDate.configure(cursor="watch")
+        # self.EntryDate.configure(font="TkFixedFont")
+
+        self.cal = DateEntry(top, width=12, background='darkblue', foreground='white', borderwidth=2)
+        self.cal.pack(padx=10, pady=10)
+        self.cal.place(relx=0.517, rely=0.325,height=23, relwidth=0.284)
 
         self.var = tk.IntVar()
         # print(self.var)
@@ -243,13 +261,13 @@ class Toplevel1:
         self.EntryAddress.place(relx=0.125, rely=0.386, height=23
                 , relwidth=0.694)
         self.EntryAddress.configure(background="white")
-        self.EntryAddress.configure(cursor="watch")
+        self.EntryAddress.configure(cursor="arrow")
         self.EntryAddress.configure(font="TkFixedFont")
         self.EntryAddress.configure(selectbackground="#c4c4c4")
 
 
 
-        self.style.configure('Treeview', font="TkDefaultFont")
+        self.style.configure('Treeview', font="TkDefaultFont", rowheight=40)
         self.Scrolledtreeview1 = ScrolledTreeView(self.Frame1)
         self.Scrolledtreeview1.place(relx=0.029, rely=0.54, relheight=0.416
                                      , relwidth=0.94)
@@ -257,70 +275,71 @@ class Toplevel1:
         # self.Scrolledtreeview1.configure(columns="Col1")
 
         # build_treeview_support starting.
-        self.Scrolledtreeview1.heading("#0", text="")
+        self.Scrolledtreeview1.heading("#0", text="Image")
         self.Scrolledtreeview1.heading("#0", anchor="center")
-        self.Scrolledtreeview1.column("#0", width="5")
-        self.Scrolledtreeview1.column("#0", minwidth="5")
-        self.Scrolledtreeview1.column("#0", stretch="0")
+        self.Scrolledtreeview1.column("#0", width="100")
+        self.Scrolledtreeview1.column("#0", minwidth="100")
+        self.Scrolledtreeview1.column("#0", stretch="1")
         self.Scrolledtreeview1.column("#0", anchor="w")
 
         self.Scrolledtreeview1.heading("Name", text="Name")
         self.Scrolledtreeview1.heading("Name", anchor="center")
-        self.Scrolledtreeview1.column("Name", width="20")
-        self.Scrolledtreeview1.column("Name", minwidth="20")
+        self.Scrolledtreeview1.column("Name", width="100")
+        self.Scrolledtreeview1.column("Name", minwidth="100")
         self.Scrolledtreeview1.column("Name", stretch="1")
         self.Scrolledtreeview1.column("Name", anchor="w")
 
         self.Scrolledtreeview1.heading("Phone", text="Phone")
         self.Scrolledtreeview1.heading("Phone", anchor="center")
-        self.Scrolledtreeview1.column("Phone", width="20")
-        self.Scrolledtreeview1.column("Phone", minwidth="20")
+        self.Scrolledtreeview1.column("Phone", width="100")
+        self.Scrolledtreeview1.column("Phone", minwidth="100")
         self.Scrolledtreeview1.column("Phone", stretch="1")
         self.Scrolledtreeview1.column("Phone", anchor="w")
 
         self.Scrolledtreeview1.heading("Gender", text="Gender")
         self.Scrolledtreeview1.heading("Gender", anchor="center")
-        self.Scrolledtreeview1.column("Gender", width="20")
-        self.Scrolledtreeview1.column("Gender", minwidth="20")
+        self.Scrolledtreeview1.column("Gender", width="100")
+        self.Scrolledtreeview1.column("Gender", minwidth="100")
         self.Scrolledtreeview1.column("Gender", stretch="1")
         self.Scrolledtreeview1.column("Gender", anchor="w")
 
         self.Scrolledtreeview1.heading("Date", text="Date")
         self.Scrolledtreeview1.heading("Date", anchor="center")
-        self.Scrolledtreeview1.column("Date", width="20")
-        self.Scrolledtreeview1.column("Date", minwidth="20")
+        self.Scrolledtreeview1.column("Date", width="100")
+        self.Scrolledtreeview1.column("Date", minwidth="100")
         self.Scrolledtreeview1.column("Date", stretch="1")
         self.Scrolledtreeview1.column("Date", anchor="w")
 
         self.Scrolledtreeview1.heading("Address", text="Address")
         self.Scrolledtreeview1.heading("Address", anchor="center")
-        self.Scrolledtreeview1.column("Address", width="20")
-        self.Scrolledtreeview1.column("Address", minwidth="20")
+        self.Scrolledtreeview1.column("Address", width="100")
+        self.Scrolledtreeview1.column("Address", minwidth="100")
         self.Scrolledtreeview1.column("Address", stretch="1")
         self.Scrolledtreeview1.column("Address", anchor="w")
 
         self.Scrolledtreeview1.heading("Feature", text="Feature")
         self.Scrolledtreeview1.heading("Feature", anchor="center")
-        self.Scrolledtreeview1.column("Feature", width="20")
-        self.Scrolledtreeview1.column("Feature", minwidth="20")
+        self.Scrolledtreeview1.column("Feature", width="100")
+        self.Scrolledtreeview1.column("Feature", minwidth="100")
         self.Scrolledtreeview1.column("Feature", stretch="1")
         self.Scrolledtreeview1.column("Feature", anchor="w")
 
-        self.Scrolledtreeview1.heading("Photo", text="Photo")
-        self.Scrolledtreeview1.heading("Photo", anchor="center")
-        self.Scrolledtreeview1.column("Photo", width="20")
-        self.Scrolledtreeview1.column("Photo", minwidth="20")
-        self.Scrolledtreeview1.column("Photo", stretch="1")
-        self.Scrolledtreeview1.column("Photo", anchor="w")
-
+        # self.Scrolledtreeview1.heading("Photo", text="Photo")
+        # self.Scrolledtreeview1.heading("Photo", anchor="center")
+        # self.Scrolledtreeview1.column("Photo", width="20")
+        # self.Scrolledtreeview1.column("Photo", minwidth="20")
+        # self.Scrolledtreeview1.column("Photo", stretch="1")
+        # self.Scrolledtreeview1.column("Photo", anchor="w")
+        self.Scrolledtreeview1.bind('<ButtonRelease-1>', self.select_table_value)
         # update_treeview(self.Scrolledtreeview1)
 
         # self.update_treeview()
-
+        if (not InternetConnection.is_connected_to_network()):
+            messagebox.showwarning("Warning", "No internest connection.")
         # t1 = Thread(target=update_treeview(self.Scrolledtreeview1))
         # t1.setDaemon(True)
         # t1.start()
-
+        self.set_label_no_of_images()
         # self.proc = mp.Process(target=self.update_treeview, args=(self.Scrolledtreeview1,))
         self.interval = interval
         thread = threading.Thread(target=self.run, args=())
@@ -338,47 +357,60 @@ class Toplevel1:
         # print("Hellow")
 
     def add_feature(self):
-        name = self.EntryName.get()
-        phone = self.EntryPhone.get()
-        note = self.EntryNote.get()
-        gender_value = self.var.get()
-        print(gender_value)
-        gender="Male"
-        if(gender_value == 2):
-            gender = "Female"
+        if (InternetConnection.is_connected_to_network()):
+            name = self.EntryName.get()
+            phone = self.EntryPhone.get()
+            note = self.EntryNote.get()
+            gender_value = self.var.get()
+            print(gender_value)
+            gender="Male"
+            if(gender_value == 2):
+                gender = "Female"
 
 
-        date = self.EntryDate.get()
-        address = self.EntryAddress.get()
-        has_image = '0'
-        if (self.photo_path != None):
-            has_image = '1'
+            date = self.cal.get_date()
+            address = self.EntryAddress.get()
+            has_image = '0'
+            if (self.photo_path != None):
+                has_image = '1'
 
-        data = {
-            'Name': name,
-            'Phone': phone,
-            'Note': note,
-            'Gender': gender,
-            'Date': date,
-            'Address': address,
-            'Image':has_image
-        }
+            if(len(name)!=0 and len(phone) !=0 and len(note) !=0 and len(address) !=0 and gender_value != 0):
 
-        firebase_db_manager = DBManager.FirebaseDBManager()
-        results = firebase_db_manager.insert(data)
-        print(results)
+                data = {
+                    'Name': name,
+                    'Phone': phone,
+                    'Note': note,
+                    'Gender': gender,
+                    'Date': date,
+                    'Address': address,
+                    'Image':has_image
+                }
 
-        if(self.photo_path != None):
-            fileManager = FileManager.FileManager()
-            fileManager.insert(results['name'], self.photo_path)
+                firebase_db_manager = DBManager.FirebaseDBManager()
+                results = firebase_db_manager.insert(data)
+                print(results)
 
-        self.clear_records()
+                if(self.photo_path != None):
+                    fileManager = FileManager.FileManager()
+                    fileManager.insert(results['name'], self.photo_path)
+
+                self.clear_records()
+            else:
+                messagebox.showwarning("Incomplete Details",
+                                       "Please fill all the fields!")
+
+
+        else:
+            messagebox.showwarning("No internet connection.", "Connect to the internet to complete the requested data insertion!")
 
     def edit_feature(self):
-        ProfileDataCollectorEdit.vp_start_gui()
+        ProfileDataCollectorEdit.vp_start_gui(self.top)
 
     def delete_feature(self):
-        DeleteWindow.vp_start_gui()
+        DeleteWindow.vp_start_gui(self.top)
+
+    def inquiry_feature(self):
+        Inquiry.vp_start_gui(self.top)
 
     def add_new_photo(self):
         print("Hello")
@@ -387,7 +419,7 @@ class Toplevel1:
 
     def clear_records(self):
         self.EntryAddress.delete(first=0, last=100)
-        self.EntryDate.delete(first=0, last=100)
+        self.cal.set_date(arrow.now().format('M/D/YY'))
         self.EntryNote.delete(first=0, last=100)
         self.EntryName.delete(first=0, last=100)
         self.EntryPhone.delete(first=0, last=100)
@@ -398,8 +430,23 @@ class Toplevel1:
 
         self.update_treeview()
 
-    def update_treeview(self, Scrolledtreeview1):
+    def select_table_value(self, x):
+        try:
+            test_str_value = self.Scrolledtreeview1.item(self.Scrolledtreeview1.selection())
+            print("Dictionary: ", type(test_str_value), test_str_value)
+
+            item = self.Scrolledtreeview1.selection()[0]
+            print("Item selected: ", item)
+            name = self.Scrolledtreeview1.item(item)['values'][0]
+            print("Value: ", self.Scrolledtreeview1.item(item)['values'][0])
+            print("Me")
+            Controller.get_selected_image(str(name))
+        except IndexError:
+            print("")
+
+    def update_treeview(self):
         dbManager = DBManager.SQLiteDBManager()
+        self.Scrolledtreeview1.delete(*self.Scrolledtreeview1.get_children())
         dbManager.fill_treeview(self.Scrolledtreeview1)
 
         # t3 = Thread(target=updateTreeView(self))
@@ -408,11 +455,18 @@ class Toplevel1:
 
     def run(self):
         while True:
+
             dbManager = DBManager.SQLiteDBManager()
             self.Scrolledtreeview1.delete(*self.Scrolledtreeview1.get_children())
             dbManager.fill_treeview(self.Scrolledtreeview1)
+
+            self.set_label_no_of_images()
             time.sleep(self.interval)
-            print("Class T4")
+            print("T4")
+
+    def set_label_no_of_images(self):
+        count = Controller.get_no_of_images()
+        self.LabelPhotoCount['text'] = count
 
 # def update_treeview(Scrolledtreeview1):
 #     # while True:

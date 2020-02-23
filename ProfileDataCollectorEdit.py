@@ -6,6 +6,9 @@
 #    Feb 21, 2020 06:55:47 PM +0530  platform: Linux
 
 import sys
+from tkinter import messagebox
+
+import InternetConnection
 
 try:
     import Tkinter as tk
@@ -22,12 +25,16 @@ except ImportError:
 import ProfileDataCollectorEdit_support
 import Controller
 
-def vp_start_gui():
+def vp_start_gui(root_parent):
     '''Starting point when module is the main routine.'''
     global val, w, root
     root = tk.Tk()
-    top = Toplevel1 (root)
+
+    top = Toplevel1(root, root_parent=root_parent)
+    # top = Toplevel1 (root)
     ProfileDataCollectorEdit_support.init(root, top)
+    root.resizable(0, 0)
+    # root.grab_set()
     root.mainloop()
 
 w = None
@@ -48,7 +55,7 @@ def destroy_Toplevel1():
     w = None
 
 class Toplevel1:
-    def __init__(self, top=None):
+    def __init__(self, top=None, root_parent=None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
@@ -57,13 +64,24 @@ class Toplevel1:
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
         _ana2color = '#ececec' # Closest X11 color: 'gray92'
 
-        top.geometry("600x450+375+370")
+        # top.geometry("600x450+375+370")
+        # top.minsize(1, 1)
+        # top.maxsize(2545, 994)
+        # top.resizable(1, 1)
+        # top.title("New Toplevel")
+        # top.configure(cursor="watch")
+        # top.configure(highlightcolor="black")
+
+        top.geometry("600x450+348+350")
         top.minsize(1, 1)
         top.maxsize(2545, 994)
         top.resizable(1, 1)
-        top.title("New Toplevel")
+        top.title("Edit")
         top.configure(cursor="watch")
         top.configure(highlightcolor="black")
+
+        self.root_parent = root_parent
+        self.hidden_parent_window()
 
         self.Labelframe_OldInfo = tk.LabelFrame(top)
         self.Labelframe_OldInfo.place(relx=0.017, rely=0.022, relheight=0.167
@@ -182,29 +200,51 @@ class Toplevel1:
         Popupmenu1.post(event.x_root, event.y_root)
 
     def find_by_name(self):
-        old_name = self.EntryOldName.get()
+
+        if(InternetConnection.is_connected_to_network()):
 
 
-        name = self.Entry_NewName.get()
-        phone = self.Entry_NewPhone.get()
-        note = self.Entry_NewNote.get()
-        gender = self.Entry_NewGender.get()
-        # date = self.En.get()
-        address = self.Entry_NewAddress.get()
+            old_name = self.EntryOldName.get()
 
-        data = {
-            'Name': name,
-            'Phone': phone,
-            'Note': note,
-            'Gender': gender,
-            'Address': address
-        }
-        # Controller.find_object_id_by_name(old_name, data)
-        Controller.update_feature_by_name(old_name, data)
-        root.destroy()
+
+            name = self.Entry_NewName.get()
+            phone = self.Entry_NewPhone.get()
+            note = self.Entry_NewNote.get()
+            gender = self.Entry_NewGender.get()
+            # date = self.En.get()
+            address = self.Entry_NewAddress.get()
+
+            if (len(name) != 0 and len(phone) != 0 and len(note) != 0 and len(address) != 0 and len(gender) != 0):
+                data = {
+                    'Name': name,
+                    'Phone': phone,
+                    'Note': note,
+                    'Gender': gender,
+                    'Address': address
+                }
+
+                # Controller.find_object_id_by_name(old_name, data)
+                Controller.update_feature_by_name(old_name, data)
+                root.destroy()
+
+            else:
+                messagebox.showwarning("Incomplete Details",
+                                       "Please fill all the required fields!")
+        else:
+            messagebox.showwarning("No internet connection.", "Connect to the internet to complete the requested edit!")
+
 
     def client_exit(self):
+        # root.grab_release()
         root.destroy()
+        self.get_back_parent_window()
+
+    def hidden_parent_window(self):
+        self.root_parent.withdraw()
+
+    def get_back_parent_window(self):
+        self.root_parent.update()
+        self.root_parent.deiconify()
 
 if __name__ == '__main__':
     vp_start_gui()

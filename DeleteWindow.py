@@ -6,8 +6,10 @@
 #    Feb 21, 2020 07:41:34 PM +0530  platform: Linux
 
 import sys
+from tkinter import messagebox
 
 import Controller
+import InternetConnection
 
 try:
     import Tkinter as tk
@@ -23,12 +25,20 @@ except ImportError:
 
 import DeleteWindow_support
 
-def vp_start_gui():
+def vp_start_gui(root_parent):
     '''Starting point when module is the main routine.'''
     global val, w, root
+
     root = tk.Tk()
-    top = Toplevel1 (root)
+    top = Toplevel1 (root, root_parent=root_parent)
     DeleteWindow_support.init(root, top)
+    root.resizable(0, 0)
+
+    # root.grab_set()
+    # root.wait_window(root)
+    # root.takefocus = True
+    # root.focus_set()
+
     root.mainloop()
 
 w = None
@@ -40,6 +50,9 @@ def create_Toplevel1(rt, *args, **kwargs):
     root = rt
     w = tk.Toplevel (root)
     top = Toplevel1 (w)
+    # top.grab_set()
+    # root.grab_set()
+    # w.grab_set()
     DeleteWindow_support.init(w, top, *args, **kwargs)
     return (w, top)
 
@@ -49,7 +62,7 @@ def destroy_Toplevel1():
     w = None
 
 class Toplevel1:
-    def __init__(self, top=None):
+    def __init__(self, top=None, root_parent= None):
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
@@ -58,12 +71,23 @@ class Toplevel1:
         _ana1color = '#d9d9d9' # X11 color: 'gray85'
         _ana2color = '#ececec' # Closest X11 color: 'gray92'
 
-        top.geometry("533x95+337+201")
+        self.root_parent = root_parent
+        self.hidden_parent_window()
+        # top.geometry("533x95+337+201")
+        # top.minsize(1, 1)
+        # top.maxsize(2545, 994)
+        # top.resizable(1, 1)
+        # top.title("New Toplevel")
+        # top.configure(cursor="watch")
+        # # top.grab_set()
+
+        top.geometry("600x450+348+350")
         top.minsize(1, 1)
         top.maxsize(2545, 994)
         top.resizable(1, 1)
-        top.title("New Toplevel")
+        top.title("Delete")
         top.configure(cursor="watch")
+        top.configure(highlightcolor="black")
 
         self.Labelframe_DeleteFeature = tk.LabelFrame(top)
         self.Labelframe_DeleteFeature.place(relx=0.023, rely=0.021
@@ -95,11 +119,29 @@ class Toplevel1:
         self.Button_DeleteConfirm.configure(text='''Delete''')
 
     def delete_confirm(self):
-        Controller.delete_feature_by_name(self.Entry1.get())
-        root.destroy()
+        if (InternetConnection.is_connected_to_network()):
+
+            if (len(self.Entry1.get()) != 0 ):
+
+                Controller.delete_feature_by_name(self.Entry1.get())
+                root.destroy()
+                self.get_back_parent_window()
+            else:
+                messagebox.showwarning("Incomplete Details",
+                                       "Please fill the name field!")
+        else:
+            messagebox.showwarning("No internet connection.", "Connect to the internet to complete the requested data deletion!")
 
     def client_exit(self):
         root.destroy()
+        self.get_back_parent_window()
+
+    def hidden_parent_window(self):
+        self.root_parent.withdraw()
+
+    def get_back_parent_window(self):
+        self.root_parent.update()
+        self.root_parent.deiconify()
 
 if __name__ == '__main__':
     vp_start_gui()

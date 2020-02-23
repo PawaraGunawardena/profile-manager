@@ -1,8 +1,12 @@
+from tkinter import messagebox
+
 import DBManager
 import FileManager
 import InternetConnection
 import DBManager
 import FileManager
+from PIL import Image
+Image.LOAD_TRUNCATED_IMAGES = True
 
 def find_object_id_by_name(name, firebase_manager):
 
@@ -40,47 +44,49 @@ def delete_feature_by_name(name):
     fileManager.remove_from_remote(id)
 
 def synachronize_sqlite_with_firebase():
-    firebaseDBManager = DBManager.FirebaseDBManager()
-    all_data = firebaseDBManager.getAllData()
-    # print(all_data)
-    sqlitebaseDBManager = DBManager.SQLiteDBManager()
-    for id in all_data:
-        data, existence = verify_item_existence_in_sqlite(id)
-        # break;
-        if (not existence):
+    if (InternetConnection.is_connected_to_network()):
+        firebaseDBManager = DBManager.FirebaseDBManager()
+        all_data = firebaseDBManager.getAllData()
+        # print(all_data)
+        sqlitebaseDBManager = DBManager.SQLiteDBManager()
+        if (all_data != None):
+            for id in all_data:
+                data, existence = verify_item_existence_in_sqlite(id)
+                # break;
+                if (not existence):
 
-            temp_dict = all_data[id]
-            temp_dict['ID'] = id
-            sqlitebaseDBManager.insert(temp_dict)
+                    temp_dict = all_data[id]
+                    temp_dict['ID'] = id
+                    sqlitebaseDBManager.insert(temp_dict)
 
-            fileManager = FileManager.FileManager()
-            fileManager.download(id)
+                    fileManager = FileManager.FileManager()
+                    fileManager.download(id)
 
-        if (existence):
-            dict_firebase = all_data[id]
-            dict_firebase['ID'] = id
+                if (existence):
+                    dict_firebase = all_data[id]
+                    dict_firebase['ID'] = id
 
-            # sqlitebaseDBManager = DBManager.SQLiteDBManager()
-            dict_sqlite, existence = sqlitebaseDBManager.getSpecificData(id)
+                    # sqlitebaseDBManager = DBManager.SQLiteDBManager()
+                    dict_sqlite, existence = sqlitebaseDBManager.getSpecificData(id)
 
-            # dict_sqlite = convert_to_dict(data_sqlite)
+                    # dict_sqlite = convert_to_dict(data_sqlite)
 
-            compare_two_dictionaries(dict_firebase, dict_sqlite)
-            # print("E")
-            fileManager = FileManager.FileManager()
-            fileManager.download(id)
+                    compare_two_dictionaries(dict_firebase, dict_sqlite)
+                    # print("E")
+                    fileManager = FileManager.FileManager()
+                    fileManager.download(id)
 
-    # print("------------")
-    # print()
-    # print(all_data.keys())
-    for sqlite_data_id in sqlitebaseDBManager.getAllIDs():
+        # print("------------")
+        # print()
+        # print(all_data.keys())
+        for sqlite_data_id in sqlitebaseDBManager.getAllIDs():
 
-        if sqlite_data_id not in all_data.keys():
-            sqlitebaseDBManager.delete(sqlite_data_id)
+            if sqlite_data_id not in all_data.keys():
+                sqlitebaseDBManager.delete(sqlite_data_id)
 
-            fileManager = FileManager.FileManager()
-            fileManager.remove_from_local(sqlite_data_id)
-            # print("Deleted"+ sqlite_data_id)
+                fileManager = FileManager.FileManager()
+                fileManager.remove_from_local(sqlite_data_id)
+                # print("Deleted"+ sqlite_data_id)
 
 def verify_item_existence_in_sqlite(id):
     sqlitebaseDBManager = DBManager.SQLiteDBManager()
@@ -123,3 +129,44 @@ def get_dictionary_of_single_results_row(data_dictionary):
     return data_dictionary
 
 # synachronize_sqlite_with_firebase()
+
+def get_selected_image(name):
+    sqliteManager = DBManager.SQLiteDBManager()
+    id_dict, exist = sqliteManager.getSpecificDataFromName(name)
+
+    if (exist == 1):
+        path = "./images/"+id_dict['ID']+"/image.jpg"
+
+        print(path)
+        im = Image.open(path)
+        # newsize = (300, 300)
+
+        width = 300
+        wpercent = (width / float(im.size[0]))
+        hsize = int((float(im.size[1]) * float(wpercent)))
+        newsize = (width, hsize)
+        im = im.resize(newsize)
+        im.show()
+
+def inquiry_data(data):
+    firebaseDBManager = DBManager.FirebaseDBManager()
+    all_data = firebaseDBManager.getAllData()
+
+    equal = False
+    for id in all_data:
+        dict_firebase = all_data[id]
+
+        new_dict = {'Name':dict_firebase['Name'], 'Phone':dict_firebase['Phone'], 'Note':dict_firebase['Note'],
+                    'Gender':dict_firebase['Gender'], 'Date':dict_firebase['Date'], 'Address':dict_firebase['Address']
+                    }
+
+        if(data == new_dict):
+            equal = True
+            break
+
+    return equal
+
+def get_no_of_images():
+    sqliteManager = DBManager.SQLiteDBManager()
+    count = sqliteManager.getImageCount()
+    return count
