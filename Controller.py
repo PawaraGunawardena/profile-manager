@@ -1,3 +1,5 @@
+from tkinter import messagebox
+
 from StorageManager import DBManager, FileManager
 import InternetConnection
 from PIL import Image
@@ -5,34 +7,48 @@ Image.LOAD_TRUNCATED_IMAGES = True
 
 def find_object_id_by_name(name, firebase_manager):
     all_data = firebase_manager.getAllData()
+    found = False
     for id in all_data:
+
         if(all_data[id]['Name'] == name):
+            found = True
             break;
-    return id
+    if (found):
+        return id
+    else:
+        return None
 
 def update_feature_by_name(name, data):
 
     firebase_manager = DBManager.FirebaseDBManager()
     id = find_object_id_by_name(name, firebase_manager)
 
-    firebase_manager.update(id, 'Name', data['Name'])
-    firebase_manager.update(id, 'Phone', data['Phone'])
-    firebase_manager.update(id, 'Note', data['Note'])
-    firebase_manager.update(id, 'Gender', data['Gender'])
-    firebase_manager.update(id, 'Address', data['Address'])
+    if(id != None):
+        firebase_manager.update(id, 'Name', data['Name'])
+        firebase_manager.update(id, 'Phone', data['Phone'])
+        firebase_manager.update(id, 'Note', data['Note'])
+        firebase_manager.update(id, 'Gender', data['Gender'])
+        firebase_manager.update(id, 'Address', data['Address'])
+    else:
+        messagebox.showwarning("Not found",
+                               "Name Not Found!!")
 
 def delete_feature_by_name(name):
 
     firebase_manager = DBManager.FirebaseDBManager()
     id = find_object_id_by_name(name, firebase_manager)
 
-    firebase_manager.delete(id)
+    if(id != None):
+        firebase_manager.delete(id)
 
-    try:
-        fileManager = FileManager.FileManager()
-        fileManager.remove_from_remote(id)
-    except:
-        print("")
+        try:
+            fileManager = FileManager.FileManager()
+            fileManager.remove_from_remote(id)
+        except:
+            print("")
+    else:
+        messagebox.showwarning("Not found",
+                               "Name Not Found!!")
 
 def synachronize_sqlite_with_firebase():
     if (InternetConnection.is_connected_to_network()):
