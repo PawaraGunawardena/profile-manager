@@ -85,7 +85,9 @@ How To Run:
 
 ## Functions provided and description of UI
 
-Can do refresh, edit firebase, remove from firebase, save to firebase, load images, inquiry and exit operations
+* Can do refresh, edit firebase, remove from firebase, save to firebase, load images, inquiry and exit operations. 
+
+* Description of each functionality:
 
     Add - Refresh and clear fields to make a new entry
     
