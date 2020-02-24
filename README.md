@@ -1,5 +1,11 @@
 # profile-data-collector
 
+How to setup project:
+
+## 1. Install dependencies
+
+    pip install -r requirements.txt
+
 How to setup firebase:
 
 ## 1. Create new Database:
@@ -80,6 +86,8 @@ Can do refresh, edit firebase, remove from firebase, save to firebase, load imag
     Exit - Use to exit the application
     
     Table elements - Table rows with images can click to view images in large scale
+    
+
 
 
 
