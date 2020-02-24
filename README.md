@@ -1,12 +1,20 @@
 # profile-data-collector
 
+About the Project 
+
+## 1. Technologies 
+
+    * Python 3
+    * SQLite
+    * Firebase 
+
 How to setup project:
 
-## 1. Install dependencies
+## 2. Install dependencies
 
     pip install -r requirements.txt
 
-How to setup firebase:
+How to setup firebase and configure:
 
 ## 1. Create new Database:
 
@@ -65,7 +73,15 @@ How to setup firebase:
     
     * Add new "serviceAccount" variable into 'config_for_storage' variable and path of the generated (downloaded) .json file set as the value of "serviceAccount"
 
+How To Run:
 
+## If default Python of the machine is Python 3, from the main folder run in the command line: 
+    
+    python main.py 
+
+## If default Python of the machine is Python 2, from the main folder run in the command line: 
+
+    python3 main.py 
 
 ## Functions provided and description of UI
 

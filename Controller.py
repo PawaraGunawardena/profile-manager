@@ -129,8 +129,6 @@ def get_selected_image(name):
 
     if (exist == 1):
         path = "./images/"+id_dict['ID']+"/image.jpg"
-
-
         im = Image.open(path)
 
         width = 300
@@ -154,7 +152,6 @@ def inquiry_data(data):
 
         if(data == new_dict):
             equal = True
-            break
 
     return equal
 
