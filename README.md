@@ -10,7 +10,7 @@ About the Project
 
 How to setup project:
 
-## 2. Install dependencies
+## Install dependencies
 
     pip install -r requirements.txt
 
