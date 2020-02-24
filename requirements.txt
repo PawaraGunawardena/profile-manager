@@ -1,0 +1,11 @@
+arrow
+tkcalendar
+firebase
+python_jwt
+gcloud
+sseclient
+Crypto
+requests_toolbelt
+pillow
+pyrebase
+firebase_admin
