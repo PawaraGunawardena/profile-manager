@@ -182,7 +182,7 @@ class SQLiteDBManager:
         try:
             saved_image = Image.open(image_path)
 
-            imwidth =20  # the new width you want
+            imwidth =30  # the new width you want
 
             # the next three lines of codes are used to keep the aspect ration of the image
             wpersent = (imwidth / float(saved_image.size[0]))
