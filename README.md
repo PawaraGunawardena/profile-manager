@@ -2,7 +2,7 @@
 
 About the Project 
 
-## 1. Technologies 
+## Technologies 
 
     * Python 3
     * SQLite
