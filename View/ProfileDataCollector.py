@@ -354,7 +354,7 @@ class Toplevel1:
                 firebase_db_manager = DBManager.FirebaseDBManager()	
                 results = firebase_db_manager.insert(data)
 
-                if(self.photo_path != None):	
+                if(self.photo_path != None):
                     fileManager = FileManager.FileManager()	
                     fileManager.insert(results['name'], self.photo_path)	
 
@@ -381,7 +381,8 @@ class Toplevel1:
     def add_new_photo(self):	
 
         self.photo_path = filedialog.askopenfilename(initialdir="./", title="Pick the Image", filetypes=(("jpg files", "*.jpg"), ("all files", "*.*")))	
-
+        if (len(self.photo_path)==0):
+            self.photo_path = None
 
     def clear_records(self):	
         self.EntryAddress.delete(first=0, last=100)	

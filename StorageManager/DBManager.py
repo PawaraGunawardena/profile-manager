@@ -197,7 +197,7 @@ class SQLiteDBManager:
 
             return saved_image, True
 
-        except FileNotFoundError:
+        except:
             return None, False
     def open_resized_image_with_tk(self, image_path):
         saved_image = ImageTk.PhotoImage(image_path)
