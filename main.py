@@ -11,10 +11,12 @@ def runGui():
 
 def runSynch():
     while True:
-        if (InternetConnection.is_connected_to_network()):
-            Controller.synachronize_sqlite_with_firebase()
-        time.sleep(15)
-
+        try:
+            if (InternetConnection.is_connected_to_network()):
+                Controller.synachronize_sqlite_with_firebase()
+            time.sleep(15)
+        except:
+            print("")
 if __name__ == "__main__":
     t1 = Thread(target = runGui)
     t2 = Thread(target = runSynch)

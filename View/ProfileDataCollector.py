@@ -415,13 +415,15 @@ class Toplevel1:
 
     def run(self):	
         while True:	
+            try:
+                dbManager = DBManager.SQLiteDBManager()
+                self.Scrolledtreeview1.delete(*self.Scrolledtreeview1.get_children())
+                dbManager.fill_treeview(self.Scrolledtreeview1)
 
-            dbManager = DBManager.SQLiteDBManager()	
-            self.Scrolledtreeview1.delete(*self.Scrolledtreeview1.get_children())	
-            dbManager.fill_treeview(self.Scrolledtreeview1)	
-
-            self.set_label_no_of_images()	
-            time.sleep(self.interval)
+                self.set_label_no_of_images()
+                time.sleep(self.interval)
+            except:
+                print("")
 
     def set_label_no_of_images(self):	
         count = Controller.get_no_of_images()	
