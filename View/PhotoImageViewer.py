@@ -1,8 +1,6 @@
 import os
 import time
 from tkinter import *
-#
-# root = Tk()
 
 from PIL import Image, ImageTk
 
@@ -16,7 +14,6 @@ class PhotoImageViewer:
 
         top.destroy()
         root = Tk()
-        root.title("Hi")
 
         root.geometry("600x450+364+221")
         root.minsize(1, 1)
@@ -86,13 +83,10 @@ class PhotoImageViewer:
                 imwidth = int(float(saved_image.size[0]) * float(
                     wpersent2))
 
-            # size[1] means the height and the size[0] means the width you can read more about this in th PIL documentation
             saved_image = ImageTk.PhotoImage(saved_image.resize((
                 imwidth, hsize),
                 Image.ANTIALIAS)
             )
-
-            # set the width and put it back in the chromelogo variable
 
             return saved_image, True
         except:

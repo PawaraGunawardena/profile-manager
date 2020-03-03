@@ -35,18 +35,6 @@ def run():
 def restart(child_window):
     child_window.destroy()
     topelevel = ProfileDataCollector.vp_start_gui()
-    # t1 = Thread(target=runGui)
-    # # t2 = Thread(target=runSynch)
-    # t1.setDaemon(True)
-    # # t2.setDaemon(True)
-    #
-    # t1.start()
-    # # t2.start()
-    # # t1.join()
-    # # t2.join()
-    #
-    # while True:
-    #     pass
 
 if __name__ == "__main__":
     run()
