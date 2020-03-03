@@ -17,9 +17,10 @@ def runSynch():
             time.sleep(15)
         except:
             print("")
-if __name__ == "__main__":
-    t1 = Thread(target = runGui)
-    t2 = Thread(target = runSynch)
+
+def run():
+    t1 = Thread(target=runGui)
+    t2 = Thread(target=runSynch)
     t1.setDaemon(True)
     t2.setDaemon(True)
 
@@ -30,6 +31,25 @@ if __name__ == "__main__":
 
     while True:
         pass
+
+def restart(child_window):
+    child_window.destroy()
+    topelevel = ProfileDataCollector.vp_start_gui()
+    # t1 = Thread(target=runGui)
+    # # t2 = Thread(target=runSynch)
+    # t1.setDaemon(True)
+    # # t2.setDaemon(True)
+    #
+    # t1.start()
+    # # t2.start()
+    # # t1.join()
+    # # t2.join()
+    #
+    # while True:
+    #     pass
+
+if __name__ == "__main__":
+    run()
 
 
 

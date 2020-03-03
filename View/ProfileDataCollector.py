@@ -13,8 +13,9 @@ from tkcalendar import DateEntry
 
 import Controller	
 from StorageManager import FileManager
-from View import Inquiry
-import InternetConnection	
+from View import Inquiry, ImageViewer
+import InternetConnection
+from View.PhotoImageViewer import PhotoImageViewer
 
 try:	
     import Tkinter as tk	
@@ -299,7 +300,7 @@ class Toplevel1:
         self.Scrolledtreeview1.column("Feature", anchor="w")	
 
 
-        self.Scrolledtreeview1.bind('<ButtonRelease-1>', self.select_table_value)	
+        self.Scrolledtreeview1.bind('<ButtonRelease-1>', self.select_table_value)
 
         if (not InternetConnection.is_connected_to_network()):	
             messagebox.showwarning("Warning", "No internest connection.")	
@@ -396,7 +397,7 @@ class Toplevel1:
 
         self.update_treeview()	
 
-    def select_table_value(self, x):	
+    def select_table_value(self, x):
         try:	
             test_str_value = self.Scrolledtreeview1.item(self.Scrolledtreeview1.selection())	
 
@@ -405,7 +406,11 @@ class Toplevel1:
 
             name = self.Scrolledtreeview1.item(item)['values'][0]
 
-            Controller.get_selected_image(str(name))	
+            # Controller.get_selected_image(str(name))
+            #
+            # ImageViewer.vp_start_gui(str(name))
+            # self.update_treeview()
+            photoImageViewer = PhotoImageViewer(self.top, name)
         except IndexError:	
             print("")	
 
