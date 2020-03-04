@@ -153,7 +153,7 @@ class SQLiteDBManager:
 
         self.image_list = []
 
-        data = self.database.execute(''' SELECT Name, Phone, Gender, Date, Address, Note, ID, Image FROM Feature ORDER BY NAME ASC''')
+        data = self.database.execute(''' SELECT Name, Phone, Gender, Date, Address, Note, ID, Image FROM Feature ORDER BY NAME DESC''')
 
         for record in data:
             if int(record[7]) == 1:
@@ -220,6 +220,19 @@ class SQLiteDBManager:
             count = record[0]
 
         return count
+
+    def getAllNames(self):
+        data = self.database.execute("SELECT Name FROM Feature ORDER BY NAME DESC")
+
+        self.image_name_list = []
+
+        for record in data:
+
+            self.image_name_list.append(record[0])
+
+        return self.image_name_list
+
+
 
 if __name__ == "__main__":
     # firebase_db_manager = FirebaseDBManager()
