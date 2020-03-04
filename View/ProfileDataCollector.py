@@ -13,7 +13,7 @@ from tkcalendar import DateEntry
 
 import Controller	
 from StorageManager import FileManager
-from View import Inquiry, ImageViewer
+from View import Inquiry
 import InternetConnection
 from View.PhotoImageViewer import PhotoImageViewer
 
